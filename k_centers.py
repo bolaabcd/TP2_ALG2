@@ -1,6 +1,29 @@
 import numpy as np
 from utils import mink_dist, dist_matrix
 
+# Returns the centroids given a KMeans classification result
+def get_kmeans_centroids(points, cindexes):
+	k = np.unique(cindexes).shape[0]
+	cnt = np.zeros(k)
+	for ind in range(points.shape[0]):
+		cnt[cindexes[ind]] += 1
+
+	centroids = np.zeros((k,points.shape[1]))
+	i = 0
+	for p in points:
+		assert(cnt[cindexes[i]] != 0)
+		centroids[cindexes[i]] += p/cnt[cindexes[i]]
+		i = i+1
+	return centroids
+
+# Computes the radiuses of each cluster, given the centroids
+def get_kmeans_cluster_radiuses(points,centroids,cindexes,dist):
+	radiuses = np.zeros(centroids.shape[0])
+	for i in range(points.shape[0]):
+		radiuses[cindexes[i]] = max(radiuses[cindexes[i]],dist(points[i],centroids[cindexes[i]]))
+	return radiuses
+
+# Lists the cluster of each point, given the indexes of each center computer with the K-centers method we learned in class
 def cluster_list(points,centers,dists):
 	ans = np.zeros(points.shape[0],dtype=int)
 	for i in range(points.shape[0]):
@@ -14,12 +37,14 @@ def cluster_list(points,centers,dists):
 		ans[i] = center
 	return ans
 
+# Computes the radius of each cluster, if given which cluster each point belongs to
 def get_cluster_radiuses(points,cluster_of_point,dists):
 	radiuses = np.zeros(cluster_of_point.shape[0])
 	for i in range(points.shape[0]):
 		radiuses[i] = max(radiuses[i],dists[i][cluster_of_point[i]])
 	return radiuses
 
+# Computes the maximum radius, of all clusteres
 def get_r(radiuses_list):
 	return radiuses_list.max()
 

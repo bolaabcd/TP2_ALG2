@@ -1,5 +1,5 @@
 from prepare_datasets import get_all_datasets
-from k_centers import k_centers,cluster_list,get_cluster_radiuses,get_r
+from k_centers import k_centers,cluster_list,get_cluster_radiuses,get_r, get_kmeans_centroids,get_kmeans_cluster_radiuses
 from utils import mink_dist, dist_matrix
 
 from sklearn.metrics import silhouette_score, adjusted_rand_score
@@ -8,6 +8,7 @@ import numpy as np
 import time
 
 
+# This file is intended to be used as a script only, but the 'if __name__ == "__main__"' part avoids it executing if someone tries to import it as a module
 if __name__ == "__main__":
 	np.random.seed(123456)
 	datasets = get_all_datasets()
@@ -17,27 +18,29 @@ if __name__ == "__main__":
 	for points,clss in datasets:
 		assert(points.shape[0] >= 700)
 		dist_matrixes = []
+		dist_fs = []
 		start_dataset = time.time()
 		print("_"*100)
 		print(f"Now for dataset number {j}:")
-		if j <= 9:
-			j = j+1
-			continue;
+		if j <= 8:
+			j += 1
+			continue
 		k = np.unique(clss).shape[0]
 		n = points.shape[0]
 		dim = points.shape[1]
 		print(f"k = {k}, n = {n}, dim = {dim}")
+		n_iter = 30
 		for p in plist:
 			start_p = time.time()
 			print("="*50)
 			print(f"For p = {p} in the Minkowski Distance:")
 			dist_f = lambda v1,v2: mink_dist(v1,v2,p)
+			dist_fs += [dist_f]
 			print("Computing distance matrix...")
 			start_dist_matr = time.time()
 			dist_matr = dist_matrix(points,dist_f)
 			dist_matrixes += [dist_matr]
 			print(f"Took {time.time()-start_dist_matr} seconds to compute distance matrix with p={p}")
-			n_iter = 30
 			print(f"Will now run {n_iter} executions of our algorithm with p={p}")
 			smallest_r = 1e18
 			biggest_sc = -1
@@ -68,13 +71,15 @@ if __name__ == "__main__":
 		print("-"*50)
 		print(f"Now the KMeans on dataset {j}:")
 		start_time_km = time.time()
-		clist2 = KMeans(k,n_init=n_iter).fit_predict(points)
+		km = KMeans(k,n_init=n_iter)
+		clist2 = km.fit_predict(points)
 		assert(clss.shape == clist2.shape)
 		ar2 = adjusted_rand_score(clss,clist2)
 		print(f"adjusted rand score km = {ar2}")
 		x = 0
+		centroids = get_kmeans_centroids(points,clist2)
 		for dist_matr in dist_matrixes:
-			radiuses2 = get_cluster_radiuses(points,clist2,dist_matr)
+			radiuses2 = get_kmeans_cluster_radiuses(points,centroids,clist2,dist_fs[x])
 			r2 = get_r(radiuses2)
 			print(f"For p = {plist[x]}, r for KMeans = {r2}")
 			sc2 = silhouette_score(dist_matr,clist2,metric="precomputed")
