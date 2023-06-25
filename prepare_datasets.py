@@ -1,8 +1,9 @@
 import urllib.request
 import os
-import zipfile
+import shutil
 import numpy as np
 import time
+import subprocess
 
 # Basic function to download and unzip a dataset
 def download_and_unzip(url,name,unzipped_name):
@@ -12,7 +13,13 @@ def download_and_unzip(url,name,unzipped_name):
 	if not os.path.exists(file_path):
 		urllib.request.urlretrieve(url,file_path)
 	if not os.path.exists("data/"+unzipped_name):
-		zipfile.ZipFile(file_path, 'r').extractall("data/")
+		shutil.unpack_archive(file_path,"data/")
+		if os.path.exists("data/"+unzipped_name[:-4]+".rar"):
+			print("+"*100)
+			print("WARNING: will need unrar installed, to unzip a .rar file. You might want to run 'sudo apt-get install unrar'")
+			print("+"*100)
+			subprocess.run(["unrar", "e", f"{'data/'+unzipped_name[:-4]+'.rar'}"])
+			subprocess.run(["mv","pd_speech_features.csv","data/pd_speech_features.csv"])
 
 def get_Handwritten_Digit_data(unzipped_name, normalize = False):
 	time_hand = time.time()
@@ -39,26 +46,30 @@ def get_Handwritten_Digit_data(unzipped_name, normalize = False):
 		data = data/data.std(axis = 0) # Making the standard deviation become 1
 	return (data,classes)
 
-# Target variable must be the last one!
-def get_csv_data(unzipped_name, nfeatures,separator = ',', normalize = False):
+def get_csv_data(unzipped_name, ninstances, nfeatures, separator = ',', nheaders = 1, target = -1, normalize = False):
 	time_hand = time.time()
 	file_path = "data/"+unzipped_name
 	f = open(file_path,'r')
-	n = 1599 if unzipped_name == "winequality-red.csv" else 4898
-	data = np.zeros((n,nfeatures)) # each line is an instance, each column a pixel
-	classes = np.zeros((n)) # the correct class of each instance
-	j = -1
+	data = np.zeros((ninstances,nfeatures)) # each line is an instance, each column a pixel
+	classes = np.zeros((ninstances)) # the correct class of each instance
+	j = -nheaders
 	for line in f.readlines():
 		# First line is header
-		if j == -1:
+		if j < 0:
 			j = j+1
 			continue
 		info = line.split(separator)
-		data[j] = info[:-1]
-		classes[j] = info[-1]
+		# Ignoring label:
+		if target != -1 and target != 0:
+			data[j] = np.concatenate((info[:target],info[target+1:]))
+		elif target == -1:
+			data[j] = info[:-1]
+		else:
+			data[j] = info[1:]
+		classes[j] = info[target]
 		j = j+1
 	f.close()
-	print(f"Took {time.time()-time_hand} seconds to prepare Handwritten Data.")
+	print(f"Took {time.time()-time_hand} seconds to prepare {unzipped_name} Data.")
 	if normalize == True:
 		data = data-data.mean(axis = 0) # Centralization
 		data = data/data.std(axis = 0) # Making the standard deviation become 1
@@ -72,20 +83,24 @@ def get_all_datasets():
 		("https://archive.ics.uci.edu/static/public/178/semeion+handwritten+digit.zip", "handwritten_digits.zip", "semeion.data"),
 		("https://archive.ics.uci.edu/static/public/186/wine+quality.zip","wine+quality.zip","winequality-red.csv"),
 		("https://archive.ics.uci.edu/static/public/186/wine+quality.zip","wine+quality.zip","winequality-white.csv"),
-		("https://archive.ics.uci.edu/static/public/445/absenteeism+at+work.zip","Absenteeism_at_work.zip","Absenteeism_at_work.csv")
+		("https://archive.ics.uci.edu/static/public/445/absenteeism+at+work.zip","Absenteeism_at_work.zip","Absenteeism_at_work.csv"),
+		("https://archive.ics.uci.edu/static/public/176/blood+transfusion+service+center.zip","blood+transfusion+service+center.zip","transfusion.data"),
+		("https://archive.ics.uci.edu/static/public/470/parkinson+s+disease+classification.zip","parkinson+s+disease+classification.zip","pd_speech_features.csv")
 	]
 	i = 1
 	for url, name, unzipped_name in urls_names:
 		time_i = time.time()
 		download_and_unzip(url,name,unzipped_name)
-		print(f"Took {time.time()-time_i} seconds to download and unzip dataset {i}")
+		print(f"Took {time.time()-time_i} seconds to download and unzip dataset {i}: {unzipped_name}")
 		i = i+1
 	print("Will now prepare all datasets...")
 	ans = [
 		get_Handwritten_Digit_data(urls_names[0][2]),
-		get_csv_data(urls_names[1][2],11,separator=';'),
-		get_csv_data(urls_names[2][2],11,separator=';'),
-		get_csv_data(urls_names[3][2],20,separator=';')
+		get_csv_data(urls_names[1][2],1599,11,separator=';'),
+		get_csv_data(urls_names[2][2],4898,11,separator=';'),
+		get_csv_data(urls_names[3][2],740,20,separator=';'),
+		get_csv_data(urls_names[4][2],748,4,separator=','),
+		get_csv_data(urls_names[5][2],756,754,separator=',', nheaders=2,target=1)
 	]
 	print(f"Took {time.time()-time_data} seconds to prepare all datasets")
 	return ans
