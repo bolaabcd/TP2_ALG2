@@ -13,14 +13,14 @@ if __name__ == "__main__":
 	datasets = get_all_datasets()
 	j = 1
 	start_total = time.time()
-	plist = [1,2,10,100]
+	plist = [1,2,10]
 	for points,clss in datasets:
 		assert(points.shape[0] >= 700)
 		dist_matrixes = []
 		start_dataset = time.time()
 		print("_"*100)
 		print(f"Now for dataset number {j}:")
-		if j <= 3:
+		if j <= 5:
 			j = j+1
 			continue;
 		k = np.unique(clss).shape[0]
@@ -85,3 +85,5 @@ if __name__ == "__main__":
 		print(f"Total time for dataset {j} = {time.time()-start_dataset} secs")
 
 		j = j+1	
+	print("=-="*33)
+	print(f"Total execution time = {time.time()-start_total} seconds")
