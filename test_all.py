@@ -26,6 +26,7 @@ if __name__ == "__main__":
 		k = np.unique(clss).shape[0]
 		n = points.shape[0]
 		dim = points.shape[1]
+		print(f"k = {k}, n = {n}, dim = {dim}")
 		for p in plist:
 			start_p = time.time()
 			print("="*50)

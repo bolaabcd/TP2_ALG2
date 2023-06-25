@@ -39,12 +39,13 @@ def get_Handwritten_Digit_data(unzipped_name, normalize = False):
 		data = data/data.std(axis = 0) # Making the standard deviation become 1
 	return (data,classes)
 
-def get_Wine_Data(unzipped_name, normalize = False):
+# Target variable must be the last one!
+def get_csv_data(unzipped_name, nfeatures,separator = ',', normalize = False):
 	time_hand = time.time()
 	file_path = "data/"+unzipped_name
 	f = open(file_path,'r')
 	n = 1599 if unzipped_name == "winequality-red.csv" else 4898
-	data = np.zeros((n,11)) # each line is an instance, each column a pixel
+	data = np.zeros((n,nfeatures)) # each line is an instance, each column a pixel
 	classes = np.zeros((n)) # the correct class of each instance
 	j = -1
 	for line in f.readlines():
@@ -52,7 +53,7 @@ def get_Wine_Data(unzipped_name, normalize = False):
 		if j == -1:
 			j = j+1
 			continue
-		info = line.split(';')
+		info = line.split(separator)
 		data[j] = info[:-1]
 		classes[j] = info[-1]
 		j = j+1
@@ -70,7 +71,8 @@ def get_all_datasets():
 	urls_names = [
 		("https://archive.ics.uci.edu/static/public/178/semeion+handwritten+digit.zip", "handwritten_digits.zip", "semeion.data"),
 		("https://archive.ics.uci.edu/static/public/186/wine+quality.zip","wine+quality.zip","winequality-red.csv"),
-		("https://archive.ics.uci.edu/static/public/186/wine+quality.zip","wine+quality.zip","winequality-white.csv")
+		("https://archive.ics.uci.edu/static/public/186/wine+quality.zip","wine+quality.zip","winequality-white.csv"),
+		("https://archive.ics.uci.edu/static/public/445/absenteeism+at+work.zip","Absenteeism_at_work.zip","Absenteeism_at_work.csv")
 	]
 	i = 1
 	for url, name, unzipped_name in urls_names:
@@ -81,8 +83,9 @@ def get_all_datasets():
 	print("Will now prepare all datasets...")
 	ans = [
 		get_Handwritten_Digit_data(urls_names[0][2]),
-		get_Wine_Data(urls_names[1][2]),
-		get_Wine_Data(urls_names[1][2])
+		get_csv_data(urls_names[1][2],11,separator=';'),
+		get_csv_data(urls_names[2][2],11,separator=';'),
+		get_csv_data(urls_names[3][2],20,separator=';')
 	]
 	print(f"Took {time.time()-time_data} seconds to prepare all datasets")
 	return ans
