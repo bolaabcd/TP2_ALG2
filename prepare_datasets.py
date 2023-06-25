@@ -46,7 +46,7 @@ def get_Handwritten_Digit_data(unzipped_name, normalize = False):
 		data = data/data.std(axis = 0) # Making the standard deviation become 1
 	return (data,classes)
 
-def get_csv_data(unzipped_name, ninstances, nfeatures, separator = ',', nheaders = 1, target = -1, normalize = False):
+def get_csv_data(unzipped_name, ninstances, nfeatures, separator = ',', nheaders = 1, target = -1, normalize = False, startcol = 0):
 	time_hand = time.time()
 	file_path = "data/"+unzipped_name
 	f = open(file_path,'r')
@@ -59,6 +59,10 @@ def get_csv_data(unzipped_name, ninstances, nfeatures, separator = ',', nheaders
 			j = j+1
 			continue
 		info = line.split(separator)
+		# This dataset sometimes has commas inside of the data... Fixing that here:
+		if unzipped_name == "Grisoni_et_al_2016_EnvInt88.csv" and info[0][0] == '"':
+			info = info[1:]
+		info = info[startcol:]
 		# Ignoring invalid lines for seventh dataset:
 		if not (len(info) > 1 and info[1].replace('.','',1).isdigit()) or (len(info) > 10 and info[9] == ''):
 			continue
@@ -90,7 +94,8 @@ def get_all_datasets():
 		("https://archive.ics.uci.edu/static/public/445/absenteeism+at+work.zip","Absenteeism_at_work.zip","Absenteeism_at_work.csv"),
 		("https://archive.ics.uci.edu/static/public/176/blood+transfusion+service+center.zip","blood+transfusion+service+center.zip","transfusion.data"),
 		("https://archive.ics.uci.edu/static/public/470/parkinson+s+disease+classification.zip","parkinson+s+disease+classification.zip","pd_speech_features.csv"),
-		("https://archive.ics.uci.edu/static/public/475/audit+data.zip","audit+data.zip","audit_data/trial.csv")
+		("https://archive.ics.uci.edu/static/public/475/audit+data.zip","audit+data.zip","audit_data/trial.csv"),
+		("https://archive.ics.uci.edu/static/public/510/qsar+bioconcentration+classes+dataset.zip","qsar+bioconcentration+classes+dataset.zip","Grisoni_et_al_2016_EnvInt88.csv")
 	]
 	i = 1
 	for url, name, unzipped_name in urls_names:
@@ -104,9 +109,10 @@ def get_all_datasets():
 		get_csv_data(urls_names[1][2],1599,11,separator=';'),
 		get_csv_data(urls_names[2][2],4898,11,separator=';'),
 		get_csv_data(urls_names[3][2],740,20,separator=';'),
-		get_csv_data(urls_names[4][2],748,4,separator=','),
-		get_csv_data(urls_names[5][2],756,754,separator=',', nheaders=2,target=1),
-		get_csv_data(urls_names[6][2],772,17,separator=',')
+		get_csv_data(urls_names[4][2],748,4),
+		get_csv_data(urls_names[5][2],756,754, nheaders=2,target=1),
+		get_csv_data(urls_names[6][2],772,17),
+		get_csv_data(urls_names[7][2],779,10,target=-2,startcol=3)
 	]
 	print(f"Took {time.time()-time_data} seconds to prepare all datasets")
 	return ans
