@@ -96,7 +96,8 @@ def get_all_datasets():
 		("https://archive.ics.uci.edu/static/public/470/parkinson+s+disease+classification.zip","parkinson+s+disease+classification.zip","pd_speech_features.csv"),
 		("https://archive.ics.uci.edu/static/public/475/audit+data.zip","audit+data.zip","audit_data/trial.csv"),
 		("https://archive.ics.uci.edu/static/public/510/qsar+bioconcentration+classes+dataset.zip","qsar+bioconcentration+classes+dataset.zip","Grisoni_et_al_2016_EnvInt88.csv"),
-		("https://archive.ics.uci.edu/static/public/522/south+german+credit.zip","south+german+credit.zip","SouthGermanCredit.asc")
+		("https://archive.ics.uci.edu/static/public/522/south+german+credit.zip","south+german+credit.zip","SouthGermanCredit.asc"),
+		("https://archive.ics.uci.edu/static/public/267/banknote+authentication.zip","banknote+authentication.zip","data_banknote_authentication.txt")
 	]
 	i = 1
 	for url, name, unzipped_name in urls_names:
@@ -114,7 +115,8 @@ def get_all_datasets():
 		get_csv_data(urls_names[5][2],756,754, nheaders=2,target=1),
 		get_csv_data(urls_names[6][2],772,17),
 		get_csv_data(urls_names[7][2],779,10,target=-2,startcol=3),
-		get_csv_data(urls_names[8][2],1000,20,separator=' ')
+		get_csv_data(urls_names[8][2],1000,20,separator=' '),
+		get_csv_data(urls_names[9][2],1372,4,nheaders=0)
 	]
 	print(f"Took {time.time()-time_data} seconds to prepare all datasets")
 	return ans

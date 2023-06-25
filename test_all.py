@@ -20,7 +20,7 @@ if __name__ == "__main__":
 		start_dataset = time.time()
 		print("_"*100)
 		print(f"Now for dataset number {j}:")
-		if j <= 8:
+		if j <= 9:
 			j = j+1
 			continue;
 		k = np.unique(clss).shape[0]
