@@ -37,8 +37,7 @@ def k_centers(points, k, dists):
 	# Vector of distances: dist_from_ans[i] = dist(i,C)
 	dist_from_ans = np.zeros(n)
 	for i in range(1,n):
-		dist_from_ans[i] = dists[0][i]
-	
+		dist_from_ans[i] = dists[ans[0]][i]
 	# Adding each point to the solution
 	for i in range(1,k):
 		selected = np.argmax(dist_from_ans)
