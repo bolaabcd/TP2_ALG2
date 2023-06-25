@@ -59,6 +59,9 @@ def get_csv_data(unzipped_name, ninstances, nfeatures, separator = ',', nheaders
 			j = j+1
 			continue
 		info = line.split(separator)
+		# Ignoring invalid lines for seventh dataset:
+		if not (len(info) > 1 and info[1].replace('.','',1).isdigit()) or (len(info) > 10 and info[9] == ''):
+			continue
 		# Ignoring label:
 		if target != -1 and target != 0:
 			data[j] = np.concatenate((info[:target],info[target+1:]))
@@ -68,6 +71,7 @@ def get_csv_data(unzipped_name, ninstances, nfeatures, separator = ',', nheaders
 			data[j] = info[1:]
 		classes[j] = info[target]
 		j = j+1
+	print(f"Found {j} valid lines, expected {ninstances}.")
 	f.close()
 	print(f"Took {time.time()-time_hand} seconds to prepare {unzipped_name} Data.")
 	if normalize == True:
@@ -85,7 +89,8 @@ def get_all_datasets():
 		("https://archive.ics.uci.edu/static/public/186/wine+quality.zip","wine+quality.zip","winequality-white.csv"),
 		("https://archive.ics.uci.edu/static/public/445/absenteeism+at+work.zip","Absenteeism_at_work.zip","Absenteeism_at_work.csv"),
 		("https://archive.ics.uci.edu/static/public/176/blood+transfusion+service+center.zip","blood+transfusion+service+center.zip","transfusion.data"),
-		("https://archive.ics.uci.edu/static/public/470/parkinson+s+disease+classification.zip","parkinson+s+disease+classification.zip","pd_speech_features.csv")
+		("https://archive.ics.uci.edu/static/public/470/parkinson+s+disease+classification.zip","parkinson+s+disease+classification.zip","pd_speech_features.csv"),
+		("https://archive.ics.uci.edu/static/public/475/audit+data.zip","audit+data.zip","audit_data/trial.csv")
 	]
 	i = 1
 	for url, name, unzipped_name in urls_names:
@@ -100,7 +105,8 @@ def get_all_datasets():
 		get_csv_data(urls_names[2][2],4898,11,separator=';'),
 		get_csv_data(urls_names[3][2],740,20,separator=';'),
 		get_csv_data(urls_names[4][2],748,4,separator=','),
-		get_csv_data(urls_names[5][2],756,754,separator=',', nheaders=2,target=1)
+		get_csv_data(urls_names[5][2],756,754,separator=',', nheaders=2,target=1),
+		get_csv_data(urls_names[6][2],772,17,separator=',')
 	]
 	print(f"Took {time.time()-time_data} seconds to prepare all datasets")
 	return ans
