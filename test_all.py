@@ -106,7 +106,7 @@ if __name__ == "__main__":
 			print(f"KMeans Average Time for p={p} on dataset {j} = {ts_km.mean()}")
 			print(f"KMeans Standard Deviation of Time for p={p} on dataset {j} = {ts_km.std()}")
 			outst += "K-Centers\n"
-			outst += f"    Dataset {j}&{rads.mean():.3f}&{scs.mean():.3f}&{ars.mean():.3f}&{ts.mean():.3f}&{rads.std():.3f}&{scs.std():.3f}&{ars.std():.3f}&{ts.std():.3f}\\\n"
+			outst += f"    Dataset {j}&{rads.mean():.3f}&{scs.mean():.3f}&{ars.mean():.3f}&{ts.mean():.3f}&{rads.std():.3f}&{scs.std():.3f}&{ars.std():.3f}&{ts.std():.3f}\\\\\n"
 			outst += "K-Means\n"
 			outst += f"    Dataset {j}&{rads_km.mean():.3f}&{scs_km.mean():.3f}&{ars_km.mean():.3f}&{ts_km.mean():.3f}&{rads_km.std():.3f}&{scs_km.std():.3f}&{ars_km.std():.3f}&{ts_km.std():.3f}\\\\\n"
 		print(f"Total time for dataset {j} = {time.time()-start_dataset} secs")
