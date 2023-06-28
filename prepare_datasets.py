@@ -66,7 +66,7 @@ def get_csv_data(unzipped_name, ninstances, nfeatures, separator = ',', nheaders
 			info = info[1:]
 		info = info[startcol:]
 		# Ignoring invalid lines for seventh dataset:
-		if not (len(info) > 1 and info[1].replace('.','',1).isdigit()) or (len(info) > 10 and info[9] == ''):
+		if not (len(info) > 1 and info[1].replace('.','',1).replace('-','',1).isdigit()) or (len(info) > 10 and info[9] == ''):
 			continue
 		# Ignoring label:
 		if target != -1 and target != 0:
@@ -112,13 +112,13 @@ def get_all_datasets():
 		get_Handwritten_Digit_data(urls_names[0][2]),
 		get_csv_data(urls_names[1][2],1599,11,separator=';'),
 		get_csv_data(urls_names[2][2],4898,11,separator=';'),
-		get_csv_data(urls_names[3][2],740,20,separator=';',startcol=1),
+		get_csv_data(urls_names[3][2],740,19,separator=';',startcol=1),
 		get_csv_data(urls_names[4][2],748,4),
-		get_csv_data(urls_names[5][2],756,754,nheaders=2,startcol=1),
+		get_csv_data(urls_names[5][2],756,753,nheaders=2,startcol=1),
 		get_csv_data(urls_names[6][2],772,17),
 		get_csv_data(urls_names[7][2],779,10,target=-2,startcol=3),
 		get_csv_data(urls_names[8][2],1000,20,separator=' '),
-		get_csv_data(urls_names[9][2],1372,4,nheaders=0)
+		get_csv_data(urls_names[9][2],1371,4,nheaders=0)
 	]
 	print(f"Took {time.time()-time_data} seconds to prepare all datasets")
 	return ans

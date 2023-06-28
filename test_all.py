@@ -11,11 +11,12 @@ import time
 # This file is intended to be used as a script only, but the 'if __name__ == "__main__"' part avoids it executing if someone tries to import it as a module
 if __name__ == "__main__":
 	np.random.seed(123456)
-	outst = ""
 	datasets = get_all_datasets()
 	j = 1
 	start_total = time.time()
 	plist = [1,2,10]
+	outst_KC = {1:"p=1\n",2:"p=2\n",10:"p=10\n"}
+	outst_KM = {1:"p=1\n,",2:"p=2\n",10:"p=10\n"}
 	for points,clss in datasets:
 		assert(points.shape[0] >= 700)
 		start_dataset = time.time()
@@ -27,7 +28,6 @@ if __name__ == "__main__":
 		print(f"k = {k}, n = {n}, dim = {dim}")
 		n_iter = 30
 		for p in plist:
-			outst += f"p = {p}, dataset = {j}\n"
 			start_p = time.time()
 			print("="*50)
 			print(f"For p = {p} in the Minkowski Distance:")
@@ -105,10 +105,9 @@ if __name__ == "__main__":
 			print(f"KMeans Standard Deviation for Maximum Radius Score for p={p} on dataset {j} = {rads_km.std()}")
 			print(f"KMeans Average Time for p={p} on dataset {j} = {ts_km.mean()}")
 			print(f"KMeans Standard Deviation of Time for p={p} on dataset {j} = {ts_km.std()}")
-			outst += "K-Centers\n"
-			outst += f"    Dataset {j}&{rads.mean():.3f}&{scs.mean():.3f}&{ars.mean():.3f}&{ts.mean():.3f}&{rads.std():.3f}&{scs.std():.3f}&{ars.std():.3f}&{ts.std():.3f}\\\\\n"
-			outst += "K-Means\n"
-			outst += f"    Dataset {j}&{rads_km.mean():.3f}&{scs_km.mean():.3f}&{ars_km.mean():.3f}&{ts_km.mean():.3f}&{rads_km.std():.3f}&{scs_km.std():.3f}&{ars_km.std():.3f}&{ts_km.std():.3f}\\\\\n"
+			# Below we add lines in the exact way we will add them to LaTeX, to be able to just copy and paste.
+			outst_KC[p] += f"    Dataset {j}&{rads.mean():.3f}&{scs.mean():.3f}&{ars.mean():.3f}&{ts.mean():.3f}&{rads.std():.3f}&{scs.std():.3f}&{ars.std():.3f}&{ts.std():.3f}\\\\\n\\hline\n"
+			outst_KM[p] += f"    Dataset {j}&{rads_km.mean():.3f}&{scs_km.mean():.3f}&{ars_km.mean():.3f}&{ts_km.mean():.3f}&{rads_km.std():.3f}&{scs_km.std():.3f}&{ars_km.std():.3f}&{ts_km.std():.3f}\\\\\n\\hline\n"
 		print(f"Total time for dataset {j} = {time.time()-start_dataset} secs")
 
 		j = j+1	
@@ -116,5 +115,5 @@ if __name__ == "__main__":
 	print(f"Total execution time = {time.time()-start_total} seconds")
 	
 	out = open("results.txt",'w')
-	out.write(outst)
+	out.write("K_Centers:\n"+outst_KC[1]+"\n"+outst_KC[2]+"\n"+outst_KC[10]+"\n\nK_Means:\n"+outst_KM[1]+"\n"+outst_KM[2]+"\n"+outst_KM[10])
 	out.close()
