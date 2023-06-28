@@ -22,7 +22,7 @@ def download_and_unzip(url,name,unzipped_name):
 			subprocess.run(["mv","pd_speech_features.csv","data/pd_speech_features.csv"])
 
 # Gets the data matrix and class vector specifically for the first dataset, which has the target (label) matrix in a different format from the rest
-def get_Handwritten_Digit_data(unzipped_name, normalize = False):
+def get_Handwritten_Digit_data(unzipped_name, normalize = True):
 	time_hand = time.time()
 	file_path = "data/"+unzipped_name
 	f = open(file_path,'r')
@@ -48,7 +48,7 @@ def get_Handwritten_Digit_data(unzipped_name, normalize = False):
 	return (data,classes)
 
 # Gets the data matrix and class vector for any dataset that's not the first one
-def get_csv_data(unzipped_name, ninstances, nfeatures, separator = ',', nheaders = 1, target = -1, normalize = False, startcol = 0):
+def get_csv_data(unzipped_name, ninstances, nfeatures, separator = ',', nheaders = 1, target = -1, normalize = True, startcol = 0):
 	time_hand = time.time()
 	file_path = "data/"+unzipped_name
 	f = open(file_path,'r')
@@ -112,9 +112,9 @@ def get_all_datasets():
 		get_Handwritten_Digit_data(urls_names[0][2]),
 		get_csv_data(urls_names[1][2],1599,11,separator=';'),
 		get_csv_data(urls_names[2][2],4898,11,separator=';'),
-		get_csv_data(urls_names[3][2],740,20,separator=';'),
+		get_csv_data(urls_names[3][2],740,20,separator=';',startcol=1),
 		get_csv_data(urls_names[4][2],748,4),
-		get_csv_data(urls_names[5][2],756,754, nheaders=2),
+		get_csv_data(urls_names[5][2],756,754,nheaders=2,startcol=1),
 		get_csv_data(urls_names[6][2],772,17),
 		get_csv_data(urls_names[7][2],779,10,target=-2,startcol=3),
 		get_csv_data(urls_names[8][2],1000,20,separator=' '),

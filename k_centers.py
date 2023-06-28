@@ -10,6 +10,7 @@ def get_kmeans_centroids(points, cindexes):
 
 	centroids = np.zeros((k,points.shape[1]))
 	i = 0
+	# The documentation pf sklearn says that the centroid of a cluster is the mean of all data points assigned to that cluster
 	for p in points:
 		assert(cnt[cindexes[i]] != 0)
 		centroids[cindexes[i]] += p/cnt[cindexes[i]]
